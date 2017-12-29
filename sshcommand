@@ -66,7 +66,13 @@ fn-adduser() {
       passwd -u "$l_user"
       ;;
     debian*|ubuntu|raspbian*)
-      adduser --disabled-password --gecos "" "$l_user"
+		if [[ -e $(which ldapadduser) ]]; then
+			ldapaddgroup "$l_user"
+			ldapadduser "$l_user" "$l_user"
+			service nscd restart
+		else
+			adduser --disabled-password --gecos "" "$l_user"
+		fi
       ;;
     *)
       useradd -m -s /bin/bash "$l_user"
